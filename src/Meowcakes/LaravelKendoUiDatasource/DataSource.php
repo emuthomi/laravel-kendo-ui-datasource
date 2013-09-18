@@ -109,7 +109,7 @@ class DataSource
 		}
 	}
 
-	private function filter(Builder $query, $d)
+	private function filter($query, $d)
 	{
 		$filter_r = function(Builder $query, $d, $depth, $logic) use(&$filter_r)
 		{
@@ -138,7 +138,7 @@ class DataSource
 		$filter_r($query, $d, 0, 'and');
 	}
 
-	public function execute(Builder $query)
+	public function execute($query)
 	{
 		if(isset($this->input[$this->sortKey]))
 			$this->sort($query, $this->input[$this->sortKey]);
