@@ -111,7 +111,7 @@ class DataSource
 
 	private function filter($query, $d)
 	{
-		$filter_r = function(Builder $query, $d, $depth, $logic) use(&$filter_r)
+		$filter_r = function($query, $d, $depth, $logic) use(&$filter_r)
 		{
 			if($depth >= 32)
 				$this->app->abort(400);
