@@ -1,7 +1,6 @@
 <?php namespace Meowcakes\LaravelKendoUiDatasource;
 
 use \Illuminate\Foundation\Application;
-use \Illuminate\Database\Query\Builder;
 
 class DataSource
 {
@@ -37,7 +36,7 @@ class DataSource
 		$this->filterKey = $this->app->offsetGet('config')->get('laravel-kendo-ui-datasource::filterKey');
 	}
 
-	private function sort(Builder $query, $d)
+	private function sort($query, $d)
 	{
 		if( ! is_array($d))
 			$this->app->abort(400);
