@@ -77,7 +77,7 @@ class DataSource
 			else if($d['operator'] === 'endswith')
 				$value = "%$value";
 
-			$query->where($d['field'], $d['operator'], $value, $logic);
+			$query->where($d['field'], $this->stringOps[$d['operator']], $value, $logic);
 		}
 		else if($this->columns[$d['field']] === 'number')
 		{
@@ -87,7 +87,7 @@ class DataSource
 			if( ! isset($d['value']) or ! is_numeric($d['value']))
 				$this->app->abort(400);
 
-			$query->where($d['field'], $d['operator'], $d['value'], $logic);
+			$query->where($d['field'], $this->numberOps[$d['operator']], $d['value'], $logic);
 		}
 		else if($this->columns[$d['field']] === 'date')
 		{
@@ -102,7 +102,7 @@ class DataSource
 				$this->app->abort(400);
 			}
 
-			$query->where($d['field'], $d['operator'], $value, $logic);
+			$query->where($d['field'], $this->numberOps[$d['operator']], $value, $logic);
 		}
 		else {
 			$this->app->abort(500);
