@@ -140,10 +140,10 @@ class DataSource
 
 	public function execute($query)
 	{
-		if(isset($this->input[$this->sortKey]))
+		if(isset($this->input[$this->sortKey]) and is_array($this->input[$this->sortKey]))
 			$this->sort($query, $this->input[$this->sortKey]);
 
-		if(isset($this->input[$this->filterKey]))
+		if(isset($this->input[$this->filterKey]) and is_array($this->input[$this->filterKey]))
 			$this->filter($query, $this->input[$this->filterKey]);
 	}
 
