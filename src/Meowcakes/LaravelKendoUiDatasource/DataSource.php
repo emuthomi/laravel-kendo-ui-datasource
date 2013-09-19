@@ -77,27 +77,27 @@ class DataSource
 			else if($d['operator'] === 'endswith')
 				$value = "%$value";
 
-			$query->where($d['field'], $d['operator'], $value, $logic);
+			$query->where($d['field'], $this->stringOps[$d['operator']], $value, $logic);
 		}
 		else if($this->columns[$d['field']] === 'number')
 		{
-			if( ! isset($d['operator']))
+			if( ! isset($d['operator']) or ! isset($this->numberOps[$d['operator']]))
 				$this->app->abort(400);
 
 			if( ! isset($d['value']) or ! is_numeric($d['value']))
 				$this->app->abort(400);
 
-			$query->where($d['field'], $d['value'] === 'true' ? '!=' : '=', 0, $logic);
+			$query->where($d['field'], $this->numberOps[$d['operator']], $d['value'], $logic);	
 		}
 		else if($this->columns[$d['field']] === 'boolean')
 		{
-			if( ! isset($d['operator']) or ! isset($this->numberOps[$d['operator']]))
+			if( ! isset($d['operator']))
 				$this->app->abort(400);
 
 			if( ! isset($d['value']))
 				$this->app->abort(400);
 
-			$query->where($d['field'], $d['operator'], $d['value'] === 'true' ? 1 : 0, $logic);			
+			$query->where($d['field'], $d['value'] === 'true' ? '!=' : '=', 0, $logic);		
 		}
 		else if($this->columns[$d['field']] === 'date')
 		{
@@ -112,7 +112,7 @@ class DataSource
 				$this->app->abort(400);
 			}
 
-			$query->where($d['field'], $d['operator'], $value, $logic);
+			$query->where($d['field'], $this->numberOps[$d['operator']], $value, $logic);
 		}
 		else {
 			$this->app->abort(500);
@@ -150,11 +150,21 @@ class DataSource
 
 	public function execute($query)
 	{
-		if(isset($this->input[$this->sortKey]))
+		if(isset($this->input[$this->sortKey]) and is_array($this->input[$this->sortKey]))
 			$this->sort($query, $this->input[$this->sortKey]);
 
-		if(isset($this->input[$this->filterKey]))
+		if(isset($this->input[$this->filterKey]) and is_array($this->input[$this->filterKey]))
 			$this->filter($query, $this->input[$this->filterKey]);
+
+		$total = $query->count();
+
+		if(isset($this->input['skip']))
+			$query->skip(@intval($this->input['skip']));
+
+		if(isset($this->input['take']))
+			$query->take(@intval($this->input['take']));
+
+		return $total;
 	}
 
 }
