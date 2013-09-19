@@ -81,13 +81,23 @@ class DataSource
 		}
 		else if($this->columns[$d['field']] === 'number')
 		{
-			if( ! isset($d['operator']) or ! isset($this->numberOps[$d['operator']]))
+			if( ! isset($d['operator']))
 				$this->app->abort(400);
 
 			if( ! isset($d['value']) or ! is_numeric($d['value']))
 				$this->app->abort(400);
 
-			$query->where($d['field'], $d['operator'], $d['value'], $logic);
+			$query->where($d['field'], $d['value'] === 'true' ? '!=' : '=', 0, $logic);
+		}
+		else if($this->columns[$d['field']] === 'boolean')
+		{
+			if( ! isset($d['operator']) or ! isset($this->numberOps[$d['operator']]))
+				$this->app->abort(400);
+
+			if( ! isset($d['value']))
+				$this->app->abort(400);
+
+			$query->where($d['field'], $d['operator'], $d['value'] === 'true' ? 1 : 0, $logic);			
 		}
 		else if($this->columns[$d['field']] === 'date')
 		{
