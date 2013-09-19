@@ -145,6 +145,16 @@ class DataSource
 
 		if(isset($this->input[$this->filterKey]) and is_array($this->input[$this->filterKey]))
 			$this->filter($query, $this->input[$this->filterKey]);
+
+		$total = $query->count();
+
+		if(isset($this->input['skip']))
+			$query->skip(@intval($this->input['skip']));
+
+		if(isset($this->input['take']))
+			$query->take(@intval($this->input['take']));
+
+		return $total;
 	}
 
 }
