@@ -5,6 +5,7 @@ class DataSourceTest extends PHPUnit_Framework_TestCase
 
 	protected function getBuilder()
 	{
+		return Mockery::mock('Illuminate\Database\Query\Builder');
 		$grammar = new Illuminate\Database\Query\Grammars\Grammar;
 		$processor = Mockery::mock('Illuminate\Database\Query\Processors\Processor');
 		return new Illuminate\Database\Query\Builder(Mockery::mock('Illuminate\Database\ConnectionInterface'), $grammar, $processor);
@@ -21,9 +22,25 @@ class DataSourceTest extends PHPUnit_Framework_TestCase
 		return $app;
 	}
 
+	public function mockWhereWithLogic($query, $logic)
+	{
+		$query->shouldReceive('where')->once()->with(Mockery::on(function($x)
+		{
+			return is_callable($x);
+		}), null, null, $logic)->andReturn($query);
+	}
+
 	public function testDataSource()
 	{
-		$query = $this->getBuilder()->select('*')->from('foo');
+		$query = $this->getBuilder();
+		$query->shouldReceive('orderBy')->once()->with('bar', 'desc')->andReturn($query);
+		$this->mockWhereWithLogic($query, 'and');
+		$query->shouldReceive('where')->once()->with('baz', '=', '123', 'and')->andReturn($query);
+		$query->shouldReceive('where')->once()->with('baz', '!=', '321', 'and')->andReturn($query);
+		$this->mockWhereWithLogic($query, 'and');
+		$query->shouldReceive('where')->once()->with('bar', 'like', '%abc%', 'or')->andReturn($query);
+		$query->shouldReceive('where')->once()->with('bar', 'not like', '%cba%', 'or')->andReturn($query);
+		$query->shouldReceive('count')->once()->andReturn(3);
 
 		$input = [
 			'sort' => [
@@ -67,10 +84,8 @@ class DataSourceTest extends PHPUnit_Framework_TestCase
 		$columns = ['bar' => 'string', 'baz' => 'number'];
 
 		$datasource = new Meowcakes\LaravelKendoUiDatasource\DataSource($this->getApp(), $input, $columns);
-		$datasource->execute($query);
-
-		echo $query->toSql() . PHP_EOL;
-		$this->assertTrue(true);
+		$total = $datasource->execute($query);
+		$this->assertEquals(3, $total);
 	}
 
 }
