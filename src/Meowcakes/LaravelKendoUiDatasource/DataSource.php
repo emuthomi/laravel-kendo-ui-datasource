@@ -87,7 +87,17 @@ class DataSource
 			if( ! isset($d['value']) or ! is_numeric($d['value']))
 				$this->app->abort(400);
 
-			$query->where($d['field'], $this->numberOps[$d['operator']], $d['value'], $logic);
+			$query->where($d['field'], $this->numberOps[$d['operator']], $d['value'], $logic);	
+		}
+		else if($this->columns[$d['field']] === 'boolean')
+		{
+			if( ! isset($d['operator']))
+				$this->app->abort(400);
+
+			if( ! isset($d['value']))
+				$this->app->abort(400);
+
+			$query->where($d['field'], $d['value'] === 'true' ? '!=' : '=', 0, $logic);		
 		}
 		else if($this->columns[$d['field']] === 'date')
 		{
