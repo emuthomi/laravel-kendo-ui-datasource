@@ -1,4 +1,4 @@
-laravel-kendo-ui-datasource
+Laravel Kendo UI DataSource
 ===========================
 
 Server side Kendo UI DataSource implementation for Laravel
