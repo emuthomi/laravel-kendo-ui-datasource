@@ -1,4 +1,4 @@
-<?php namespace Meowcakes\LaravelKendoUiDatasource;
+<?php namespace Gealtec\LaravelKendoUiDatasource;
 
 use Illuminate\Support\Facades\Facade as IlluminateFacade;
 
